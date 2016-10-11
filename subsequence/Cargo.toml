@@ -1,0 +1,6 @@
+[package]
+name = "subsequence"
+version = "0.1.0"
+authors = ["eruca <nickwill1984@126.com>"]
+
+[dependencies]
