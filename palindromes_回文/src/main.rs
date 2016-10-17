@@ -26,7 +26,6 @@ fn main() {
 
 	let out_words = vec!["is not a palindrome.","is a regular palindrome.","is a mirrored string","is a mirrored palindrome"];
 
-
 	let mut inputs = Vec::new();
 
 	loop{
@@ -36,12 +35,9 @@ fn main() {
 			Err(e) => {println!("{:?}", e);return;}
 		}
 
-		if input.as_str().trim() == "quit"{
+		if input.as_str().trim().to_lowercase() == "quit"{
 			break;
 		}
-
-		// println!("{}", is_palindrome(&input));
-		// println!("{}", is_mirrored(&input, &map));
 
 		inputs.push(input);
 	}
@@ -49,29 +45,31 @@ fn main() {
 	let inputs:Vec<_> = inputs.into_iter().map(|s| {
 		let a = is_palindrome(&s);
 		let b = is_mirrored(&s, &map);
+		let raw = s.as_str().trim();
+		let outword:String;
 
 		if a {
 			if b {
-				format!("{} -- {}\n",s.as_str().trim(), out_words[3])
+				outword = out_words[3].to_string();
 			} else {
-				format!("{} -- {}\n",s.as_str().trim(), out_words[1])			
+				outword = out_words[1].to_string();
 			}
 		} else {
-			if b{
-				format!("{} -- {}\n",s.as_str().trim(), out_words[2])
+			if b {
+				outword = out_words[2].to_string();
 			} else {
-				format!("{} -- {}\n",s.as_str().trim(), out_words[0])
+				outword = out_words[0].to_string();
 			}
 		}
+
+		format!("{} -- {}\n", raw, outword)
 	}).collect();
 
-	println!("{}", inputs.join("\n"));
+	print!("{}", inputs.join("\n"));
 }
 
 fn is_palindrome(s: &str) -> bool {
 	let s = s.trim();
-	// let rev :String = s.chars().rev().collect();
-	// rev.eq(s)
 	let length = s.len();
 	if length == 1 {
 		return true;
