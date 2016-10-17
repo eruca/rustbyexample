@@ -75,15 +75,14 @@ fn is_palindrome(s: &str) -> bool {
 		return true;
 	}
 
+	let tuple:(&str, &str);
 	if length &1 == 0 {
-		let(a, b) = s.split_at(length/2);
-		let b:String =b.chars().rev().collect();
-		b.eq(a)
+		tuple = s.split_at(length/2);
 	} else {
-		let (a, b) = (&s[0..length/2],&s[(length+1)/2..length]);
-		let b:String = b.chars().rev().collect();
-		b.eq(a)
+		tuple = (&s[0..length/2], &s[(length+1)/2..length]);
 	}
+	let b: String = tuple.1.chars().rev().collect();
+	b.eq(tuple.0)
 }
 
 fn is_mirrored(s: &str, map:&HashMap<char, char>) -> bool {
@@ -93,37 +92,26 @@ fn is_mirrored(s: &str, map:&HashMap<char, char>) -> bool {
 		return s.chars().all(|c|map.get(&c).map_or(false, |_|true));
 	}
 
+	let tuple: (&str, &str);
 	if length & 1 == 0 {
-		let(a, b) = s.split_at(length/2);
-		let c:String = b.chars().rev().filter_map(|c|{
-			match map.get(&c) {
-				Some(&v) => Some(v),
-				None => None,
-			}
-		}).collect();
-
-		if c.len() != b.len() {
-			return false;
-		}
-
-		c.eq(a)
+		tuple = s.split_at(length/2);
 	} else {
-		let (a, b) = (&s[..length/2], &s[(length+1)/2..]);
 		if !&s[length/2..(length+1)/2].chars().all(|c| map.get(&c).map_or(false,|&v| v == c)){
 			return false;
 		}
-
-		let c:String = b.chars().rev().filter_map(|c|{
-			match map.get(&c) {
-				Some(&v) => Some(v),
-				None => None,
-			}
-		}).collect();
-
-		if c.len() != b.len() {
-			return false;
-		}
-
-		c.eq(a)
+		tuple = (&s[..length/2], &s[(length+1)/2..]);
 	}
+
+	let c:String = tuple.1.chars().rev().filter_map(|c|{
+		match map.get(&c) {
+			Some(&v) => Some(v),
+			None => None,
+		}
+	}).collect();
+
+	if c.len() != tuple.1.len() {
+		return false;
+	}
+
+	c.eq(tuple.0)
 }
