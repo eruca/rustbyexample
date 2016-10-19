@@ -26,7 +26,6 @@ fn main() {
 
 	let out_words = vec!["is not a palindrome.","is a regular palindrome.","is a mirrored string","is a mirrored palindrome"];
 
-
 	let mut inputs = Vec::new();
 
 	loop{
@@ -36,12 +35,9 @@ fn main() {
 			Err(e) => {println!("{:?}", e);return;}
 		}
 
-		if input.as_str().trim() == "quit"{
+		if input.as_str().trim().to_lowercase() == "quit"{
 			break;
 		}
-
-		// println!("{}", is_palindrome(&input));
-		// println!("{}", is_mirrored(&input, &map));
 
 		inputs.push(input);
 	}
@@ -49,43 +45,44 @@ fn main() {
 	let inputs:Vec<_> = inputs.into_iter().map(|s| {
 		let a = is_palindrome(&s);
 		let b = is_mirrored(&s, &map);
+		let raw = s.as_str().trim();
+		let outword:String;
 
 		if a {
 			if b {
-				format!("{} -- {}\n",s.as_str().trim(), out_words[3])
+				outword = out_words[3].to_string();
 			} else {
-				format!("{} -- {}\n",s.as_str().trim(), out_words[1])			
+				outword = out_words[1].to_string();
 			}
 		} else {
-			if b{
-				format!("{} -- {}\n",s.as_str().trim(), out_words[2])
+			if b {
+				outword = out_words[2].to_string();
 			} else {
-				format!("{} -- {}\n",s.as_str().trim(), out_words[0])
+				outword = out_words[0].to_string();
 			}
 		}
+
+		format!("{} -- {}\n", raw, outword)
 	}).collect();
 
-	println!("{}", inputs.join("\n"));
+	print!("{}", inputs.join("\n"));
 }
 
 fn is_palindrome(s: &str) -> bool {
 	let s = s.trim();
-	// let rev :String = s.chars().rev().collect();
-	// rev.eq(s)
 	let length = s.len();
 	if length == 1 {
 		return true;
 	}
 
+	let tuple:(&str, &str);
 	if length &1 == 0 {
-		let(a, b) = s.split_at(length/2);
-		let b:String =b.chars().rev().collect();
-		b.eq(a)
+		tuple = s.split_at(length/2);
 	} else {
-		let (a, b) = (&s[0..length/2],&s[(length+1)/2..length]);
-		let b:String = b.chars().rev().collect();
-		b.eq(a)
+		tuple = (&s[0..length/2], &s[(length+1)/2..length]);
 	}
+	let b: String = tuple.1.chars().rev().collect();
+	b.eq(tuple.0)
 }
 
 fn is_mirrored(s: &str, map:&HashMap<char, char>) -> bool {
@@ -95,37 +92,26 @@ fn is_mirrored(s: &str, map:&HashMap<char, char>) -> bool {
 		return s.chars().all(|c|map.get(&c).map_or(false, |_|true));
 	}
 
+	let tuple: (&str, &str);
 	if length & 1 == 0 {
-		let(a, b) = s.split_at(length/2);
-		let c:String = b.chars().rev().filter_map(|c|{
-			match map.get(&c) {
-				Some(&v) => Some(v),
-				None => None,
-			}
-		}).collect();
-
-		if c.len() != b.len() {
-			return false;
-		}
-
-		c.eq(a)
+		tuple = s.split_at(length/2);
 	} else {
-		let (a, b) = (&s[..length/2], &s[(length+1)/2..]);
 		if !&s[length/2..(length+1)/2].chars().all(|c| map.get(&c).map_or(false,|&v| v == c)){
 			return false;
 		}
-
-		let c:String = b.chars().rev().filter_map(|c|{
-			match map.get(&c) {
-				Some(&v) => Some(v),
-				None => None,
-			}
-		}).collect();
-
-		if c.len() != b.len() {
-			return false;
-		}
-
-		c.eq(a)
+		tuple = (&s[..length/2], &s[(length+1)/2..]);
 	}
+
+	let c:String = tuple.1.chars().rev().filter_map(|c|{
+		match map.get(&c) {
+			Some(&v) => Some(v),
+			None => None,
+		}
+	}).collect();
+
+	if c.len() != tuple.1.len() {
+		return false;
+	}
+
+	c.eq(tuple.0)
 }
